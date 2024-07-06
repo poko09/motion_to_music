@@ -6,7 +6,7 @@ from send_to_max import send_position, send_osc_message  # Importuj funkcje wysy
 def track_the_motion():
     mp_drawing = mp.solutions.drawing_utils
     mp_hands = mp.solutions.hands
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(2) # 0 - USB camera, 1 - OBS, 2 - nothing, 3 - WEB CAM
 
     if not cap.isOpened():
         print("Cannot open camera. Please check your camera settings.")
@@ -14,7 +14,7 @@ def track_the_motion():
 
     hands = mp_hands.Hands()
     previous_landmarks = {}
-    movement_threshold = 40
+    movement_threshold = 20
 
     while True:
         success, image = cap.read()
@@ -38,7 +38,7 @@ def track_the_motion():
                         print(f"Significant movement detected in hand {hand_id}.")
                         send_position(hand_id, current_positions)  # Wywołaj funkcję wysyłającą pozycje
                         # Przesyłanie danych przez OSC
-                        data = {'hand_id': hand_id, 'positions': current_positions[1]}
+                        data = {'hand_id': hand_id, 'positions': current_positions}
                         send_osc_message(str(data))
 
                 previous_landmarks[hand_id] = current_positions
